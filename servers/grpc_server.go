@@ -8,7 +8,7 @@ import (
 )
 
 type GRPCServer struct {
-	server  *grpc.Server
+	Server  *grpc.Server
 	address string
 	logger  *zap.Logger
 }
@@ -19,7 +19,7 @@ func NewGRPCServer(address string, port int, logger *zap.Logger) *GRPCServer {
 	return &GRPCServer{
 		address: fmt.Sprintf("%s:%d", address, port),
 		logger:  logger,
-		server:  server,
+		Server:  server,
 	}
 }
 
@@ -30,7 +30,7 @@ func (s *GRPCServer) Run() error {
 		return fmt.Errorf("failed to listen gRPC server address: %w", err)
 	}
 
-	if err := s.server.Serve(l); err != nil {
+	if err := s.Server.Serve(l); err != nil {
 		return fmt.Errorf("failed to serve gRPC server: %w", err)
 	}
 
@@ -39,12 +39,12 @@ func (s *GRPCServer) Run() error {
 
 func (s *GRPCServer) GracefulStop() error {
 	s.logger.Sugar().Info("gracefully stopping gRPC server", zap.String("address", s.address))
-	s.server.GracefulStop()
+	s.Server.GracefulStop()
 	return nil
 }
 
 func (s *GRPCServer) ForcefulStop() error {
 	s.logger.Sugar().Info("force stopping gRPC server", zap.String("address", s.address))
-	s.server.Stop()
+	s.Server.Stop()
 	return nil
 }
