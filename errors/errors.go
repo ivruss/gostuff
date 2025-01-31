@@ -1,6 +1,10 @@
 package errors
 
-import "errors"
+import (
+	"errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
 const (
 	InternalErrorMsg    = "Internal Error"
@@ -35,4 +39,19 @@ func FromError(err error) (*ErrorResult, bool) {
 		return nil, false
 	}
 	return result, true
+}
+
+func FromErrorToGRPC(err error) error {
+	var result *ErrorResult
+	if ok := errors.As(err, &result); !ok {
+		switch result.Code {
+		case 400:
+			return status.Errorf(codes.InvalidArgument, "%s", result.Msg)
+		case 404:
+			return status.Errorf(codes.NotFound, "%s", result.Msg)
+		default:
+			return status.Errorf(codes.Internal, "%s", result.Msg)
+		}
+	}
+	return status.Errorf(codes.Internal, "%s", result.Msg)
 }
