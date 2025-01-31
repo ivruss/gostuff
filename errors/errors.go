@@ -44,14 +44,15 @@ func FromError(err error) (*ErrorResult, bool) {
 func FromErrorToGRPC(err error) error {
 	var result *ErrorResult
 	if ok := errors.As(err, &result); !ok {
-		switch result.Code {
-		case 400:
-			return status.Errorf(codes.InvalidArgument, "%s", result.Msg)
-		case 404:
-			return status.Errorf(codes.NotFound, "%s", result.Msg)
-		default:
-			return status.Errorf(codes.Internal, "%s", result.Msg)
-		}
+		return status.Errorf(codes.Internal, "Unknown error: %v", err)
 	}
-	return status.Errorf(codes.Internal, "%s", result.Msg)
+
+	switch result.Code {
+	case 400:
+		return status.Errorf(codes.InvalidArgument, "%s", result.Msg)
+	case 404:
+		return status.Errorf(codes.NotFound, "%s", result.Msg)
+	default:
+		return status.Errorf(codes.Internal, "%s", result.Msg)
+	}
 }
