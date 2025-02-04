@@ -21,7 +21,7 @@ func ConstructLogger(env string) (*zap.Logger, error) {
 			return nil, fmt.Errorf("error creating production logger: %w", err)
 		}
 	default:
-		return nil, fmt.Errorf("unknown environment %q", cfg.Logger.Env)
+		return nil, fmt.Errorf("unknown environment %q", env)
 	}
 
 	defer logger.Sync()
