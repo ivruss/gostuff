@@ -44,7 +44,7 @@ func FromError(err error) (*ErrorResult, bool) {
 func FromErrorToGRPC(err error) error {
 	var result *ErrorResult
 	if ok := errors.As(err, &result); !ok {
-		return status.Errorf(codes.Internal, "Unknown error: %v", err)
+		return status.Errorf(codes.Internal, InternalErrorMsg)
 	}
 
 	switch result.Code {
