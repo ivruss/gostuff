@@ -8,8 +8,8 @@ import (
 )
 
 type DB struct {
-	log  *zap.Logger
-	conn *sqlx.DB
+	Log  *zap.Logger
+	Conn *sqlx.DB
 }
 
 func NewDB(
@@ -33,12 +33,12 @@ func NewDB(
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
-	return &DB{conn: db, log: log}, nil
+	return &DB{Conn: db, Log: log}, nil
 }
 
 func (s *DB) Close() error {
-	s.log.Info("closing postgresql database connection")
-	err := s.conn.Close()
+	s.Log.Info("closing postgresql database connection")
+	err := s.Conn.Close()
 	if err != nil {
 		return fmt.Errorf("error closing connection: %w", err)
 	}
