@@ -24,27 +24,27 @@ func NewGRPCServer(address string, port int, logger *zap.Logger) *GRPCServer {
 }
 
 func (s *GRPCServer) Run() error {
-	s.logger.Info("starting gRPC server", zap.String("address", s.address))
+	s.logger.Info("starting grpc_client server", zap.String("address", s.address))
 	l, err := net.Listen("tcp", s.address)
 	if err != nil {
-		return fmt.Errorf("failed to listen gRPC server address: %w", err)
+		return fmt.Errorf("failed to listen grpc_client server address: %w", err)
 	}
 
 	if err := s.Server.Serve(l); err != nil {
-		return fmt.Errorf("failed to serve gRPC server: %w", err)
+		return fmt.Errorf("failed to serve grpc_client server: %w", err)
 	}
 
 	return nil
 }
 
 func (s *GRPCServer) GracefulStop() error {
-	s.logger.Sugar().Info("gracefully stopping gRPC server", zap.String("address", s.address))
+	s.logger.Sugar().Info("gracefully stopping grpc_client server", zap.String("address", s.address))
 	s.Server.GracefulStop()
 	return nil
 }
 
 func (s *GRPCServer) ForcefulStop() error {
-	s.logger.Sugar().Info("force stopping gRPC server", zap.String("address", s.address))
+	s.logger.Sugar().Info("force stopping grpc_client server", zap.String("address", s.address))
 	s.Server.Stop()
 	return nil
 }
