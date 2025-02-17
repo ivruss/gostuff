@@ -23,6 +23,6 @@ type GRPCServer struct {
 	Port    int    `yaml:"port" env-default:"7070"`
 }
 
-type GRPCConn struct {
+type GRPCConnection struct {
 	Endpoint string `yaml:"endpoint"`
 }
