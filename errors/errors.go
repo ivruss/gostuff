@@ -2,6 +2,7 @@ package errors
 
 import (
 	"errors"
+	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -47,6 +48,7 @@ func FromErrorToGRPC(err error) error {
 		return status.Errorf(codes.Internal, InternalErrorMsg)
 	}
 
+	fmt.Println(err)
 	switch result.Code {
 	case 400:
 		return status.Errorf(codes.InvalidArgument, "%s", result.Msg)
