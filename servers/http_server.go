@@ -34,7 +34,7 @@ func (s *HTTPServer) Run() error {
 }
 
 func (s *HTTPServer) GracefulStop() error {
-	s.logger.Info("shutting down HTTP server", zap.String("address", s.server.Addr))
+	s.logger.Info("gracefully shutting down HTTP server", zap.String("address", s.server.Addr))
 	if err := s.server.Shutdown(context.Background()); err != nil {
 		return fmt.Errorf("unable to shutdown HTTP server: %v", err)
 	}
@@ -42,7 +42,7 @@ func (s *HTTPServer) GracefulStop() error {
 }
 
 func (s *HTTPServer) ForcefulStop() error {
-	s.logger.Info("shutting down HTTP server", zap.String("address", s.server.Addr))
+	s.logger.Info("forcefully shutting down HTTP server", zap.String("address", s.server.Addr))
 	if err := s.server.Close(); err != nil {
 		return fmt.Errorf("unable to shutdown HTTP server: %v", err)
 	}
