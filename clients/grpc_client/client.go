@@ -8,7 +8,7 @@ import (
 )
 
 type GRPCConn struct {
-	conn   *grpc.ClientConn
+	Conn   *grpc.ClientConn
 	logger *zap.Logger
 }
 
@@ -23,14 +23,14 @@ func NewGRPCConn(endpoint string, logger *zap.Logger) (*GRPCConn, error) {
 	}
 
 	return &GRPCConn{
-		conn:   clientConn,
+		Conn:   clientConn,
 		logger: logger,
 	}, nil
 }
 
 func (c *GRPCConn) Close() error {
 	c.logger.Info("closing grpc_client connection")
-	if err := c.conn.Close(); err != nil {
+	if err := c.Conn.Close(); err != nil {
 		return fmt.Errorf("error closing grpc_client connection: %v", err)
 	}
 	return nil
