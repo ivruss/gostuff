@@ -28,7 +28,7 @@ func NewGRPCConn(endpoint string, logger *zap.Logger) (*GRPCConn, error) {
 	}, nil
 }
 
-func (c *GRPCConn) Close(logger *zap.Logger) error {
+func (c *GRPCConn) Close() error {
 	c.logger.Info("closing grpc_client connection")
 	if err := c.conn.Close(); err != nil {
 		return fmt.Errorf("error closing grpc_client connection: %v", err)
