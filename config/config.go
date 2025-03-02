@@ -35,3 +35,12 @@ type GRPCServer struct {
 type GRPCConn struct {
 	Endpoint string `yaml:"endpoint"`
 }
+
+type RabbitMQ struct {
+	Host     string `yaml:"host" env-default:"localhost"`
+	Port     int    `yaml:"port" env-default:"5672"`
+	User     string `env:"RABBITMQ_USER" env-default:"guest"`
+	Password string `env:"RABBITMQ_PASS" env-default:"guest"`
+	VHost    string `yaml:"vhost" env-default:"/"`
+	Queue    string `yaml:"queue" env-default:"task_queue"`
+}
