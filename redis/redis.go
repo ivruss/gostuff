@@ -1,11 +1,11 @@
 package redis
 
 import (
-	redis "github.com/redis/go-redis/v9"
+	rdb "github.com/redis/go-redis/v9"
 )
 
-func NewRedisClient(addr string, password string, DB int) *redis.Client {
-	client := redis.NewClient(&redis.Options{
+func NewRedisClient(addr string, password string, DB int) *rdb.Client {
+	client := rdb.NewClient(&rdb.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       DB,
