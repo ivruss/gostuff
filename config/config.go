@@ -47,6 +47,6 @@ type RabbitMQ struct {
 
 type Redis struct {
 	Address  string `yaml:"address" env-default:"localhost:6379"`
-	Password string `yaml:"password" env-default:""`
+	Password string `env:"REDIS_PASSWORD" env-default:""`
 	DB       int    `yaml:"db" env-default:"0"`
 }
