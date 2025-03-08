@@ -44,3 +44,9 @@ type RabbitMQ struct {
 	VHost    string `yaml:"vhost" env-default:"/"`
 	Queue    string `yaml:"queue" env-default:"task_queue"`
 }
+
+type Redis struct {
+	Address  string `yaml:"address" env-default:"localhost:6379"`
+	Password string `yaml:"password" env-default:""`
+	DB       int    `yaml:"db" env-default:"0"`
+}
