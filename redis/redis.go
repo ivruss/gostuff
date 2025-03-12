@@ -14,7 +14,7 @@ func NewRedisClient(addr string, password string, DB int) (*rdb.Client, error) {
 		DB:       DB,
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*505)
 	defer cancel()
 
 	_, err := client.Ping(ctx).Result()
