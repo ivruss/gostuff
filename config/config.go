@@ -9,7 +9,7 @@ type Storage struct {
 	Host     string `yaml:"host" env-default:"db"`
 	Port     int    `yaml:"port" env-default:"5432"`
 	User     string `yaml:"username"`
-	Password string
+	Password string `env:"DB_PASSWORD"`
 	SSLMode  string `yaml:"ssl_mode" env-default:"disable"`
 }
 
@@ -36,13 +36,21 @@ type GRPCConn struct {
 	Endpoint string `yaml:"endpoint"`
 }
 
-type RabbitMQ struct {
+type RabbitConsumer struct {
+	BindingKey string `yaml:"binding_key"`
+}
+
+type RabbitProducer struct {
+	ExchangeName string `yaml:"exchange_name"`
+	RoutingKey   string `yaml:"routing_key"`
+}
+
+type RabbitConn struct {
 	Host     string `yaml:"host" env-default:"localhost"`
 	Port     int    `yaml:"port" env-default:"5672"`
 	User     string `env:"RABBITMQ_USER" env-default:"guest"`
 	Password string `env:"RABBITMQ_PASS" env-default:"guest"`
 	VHost    string `yaml:"vhost" env-default:""`
-	Queue    string `yaml:"queue" env-default:"task_queue"`
 }
 
 type Redis struct {
