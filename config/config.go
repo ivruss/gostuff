@@ -9,7 +9,7 @@ type Storage struct {
 	Host     string `yaml:"host" env-default:"db"`
 	Port     int    `yaml:"port" env-default:"5432"`
 	User     string `yaml:"username"`
-	Password string `env:"DB_PASSWORD"`
+	Password string `env:"DB_PASS"`
 	SSLMode  string `yaml:"ssl_mode" env-default:"disable"`
 }
 
