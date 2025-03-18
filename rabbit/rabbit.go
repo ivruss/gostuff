@@ -17,7 +17,11 @@ func NewRabbitConnection(connstr string) (*rabbitmq.Conn, error) {
 	return conn, nil
 }
 
-func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string) (*rabbitmq.Publisher, error) {
+type Publisher struct {
+	Publisher *rabbitmq.Publisher
+}
+
+func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string) (*Publisher, error) {
 	publisher, err := rabbitmq.NewPublisher(
 		conn,
 		rabbitmq.WithPublisherOptionsLogging,
@@ -28,7 +32,16 @@ func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string) (*rabbitmq.Pub
 		return nil, fmt.Errorf("error creating rabbitMQ publisher: %w", err)
 	}
 
-	return publisher, nil
+	return &Publisher{Publisher: publisher}, nil
+}
+
+func (p *Publisher) Close() error {
+	p.Publisher.Close()
+	return nil
+}
+
+type Consumer struct {
+	Consumer *rabbitmq.Consumer
 }
 
 func NewRabbitConsumer(
@@ -36,7 +49,7 @@ func NewRabbitConsumer(
 	queueName string,
 	routingKey string,
 	exchangeName string,
-) (*rabbitmq.Consumer, error) {
+) (*Consumer, error) {
 	consumer, err := rabbitmq.NewConsumer(
 		conn,
 		queueName,
@@ -48,5 +61,10 @@ func NewRabbitConsumer(
 		return nil, fmt.Errorf("error creating rabbitMQ consumer: %w", err)
 	}
 
-	return consumer, nil
+	return &Consumer{Consumer: consumer}, nil
+}
+
+func (c *Consumer) Close() error {
+	c.Consumer.Close()
+	return nil
 }
