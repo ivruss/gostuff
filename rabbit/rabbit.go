@@ -64,7 +64,7 @@ func NewRabbitConsumer(
 	return &Consumer{Consumer: consumer}, nil
 }
 
-func (c *Consumer) Close() error {
-	c.Consumer.Close()
+func (cs *Consumer) Close() error {
+	cs.Consumer.Close()
 	return nil
 }
