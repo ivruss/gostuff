@@ -20,6 +20,7 @@ func NewRabbitConnection(connstr string) (*rabbitmq.Conn, error) {
 
 type Publisher interface {
 	Publish(data []byte) error
+	Close() error
 }
 
 type RabbitPublisher struct {
@@ -67,7 +68,12 @@ func (p *RabbitPublisher) Close() error {
 	return nil
 }
 
-type Consumer struct {
+type Consumer interface {
+	Consume() error
+	Close() error
+}
+
+type RabbitConsumer struct {
 	consumer *rabbitmq.Consumer
 	logger   *zap.Logger
 }
@@ -78,7 +84,7 @@ func NewRabbitConsumer(
 	routingKey string,
 	exchangeName string,
 	logger *zap.Logger,
-) (*Consumer, error) {
+) (Consumer, error) {
 	consumer, err := rabbitmq.NewConsumer(
 		conn,
 		queueName,
@@ -90,13 +96,13 @@ func NewRabbitConsumer(
 		return nil, fmt.Errorf("error creating rabbitMQ consumer: %w", err)
 	}
 
-	return &Consumer{
+	return &RabbitConsumer{
 		consumer: consumer,
 		logger:   logger,
 	}, nil
 }
 
-func (c *Consumer) Consume() error {
+func (c *RabbitConsumer) Consume() error {
 	err := c.consumer.Run(
 		func(delivery rabbitmq.Delivery) rabbitmq.Action {
 			c.logger.Sugar().Infof("recieved rabbit message: %s", string(delivery.Body))
@@ -108,7 +114,7 @@ func (c *Consumer) Consume() error {
 	return nil
 }
 
-func (c *Consumer) Close() error {
+func (c *RabbitConsumer) Close() error {
 	c.consumer.Close()
 	return nil
 }
