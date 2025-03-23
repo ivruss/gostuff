@@ -48,12 +48,12 @@ func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string, routingKey []s
 	}, nil
 }
 
-func (pb *RabbitPublisher) Publish(data []byte) error {
-	err := pb.publisher.Publish(
+func (p *RabbitPublisher) Publish(data []byte) error {
+	err := p.publisher.Publish(
 		data,
-		pb.routingKey,
+		p.routingKey,
 		rabbitmq.WithPublishOptionsContentType("application/json"),
-		rabbitmq.WithPublishOptionsExchange(pb.exchangeName),
+		rabbitmq.WithPublishOptionsExchange(p.exchangeName),
 	)
 	if err != nil {
 		return fmt.Errorf("error publishing message: %w", err)
@@ -62,8 +62,8 @@ func (pb *RabbitPublisher) Publish(data []byte) error {
 	return nil
 }
 
-func (pb *RabbitPublisher) Close() error {
-	pb.publisher.Close()
+func (p *RabbitPublisher) Close() error {
+	p.publisher.Close()
 	return nil
 }
 
@@ -96,10 +96,10 @@ func NewRabbitConsumer(
 	}, nil
 }
 
-func (cs *Consumer) Consume() error {
-	err := cs.consumer.Run(
+func (c *Consumer) Consume() error {
+	err := c.consumer.Run(
 		func(delivery rabbitmq.Delivery) rabbitmq.Action {
-			cs.logger.Sugar().Infof("recieved rabbit message: %s", string(delivery.Body))
+			c.logger.Sugar().Infof("recieved rabbit message: %s", string(delivery.Body))
 			return rabbitmq.Ack
 		})
 	if err != nil {
@@ -108,7 +108,7 @@ func (cs *Consumer) Consume() error {
 	return nil
 }
 
-func (cs *Consumer) Close() error {
-	cs.consumer.Close()
+func (c *Consumer) Close() error {
+	c.consumer.Close()
 	return nil
 }
