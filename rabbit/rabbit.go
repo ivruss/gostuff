@@ -3,6 +3,7 @@ package rabbit
 import (
 	"fmt"
 	rabbitmq "github.com/wagslane/go-rabbitmq"
+	"go.uber.org/zap"
 )
 
 func NewRabbitConnection(connstr string) (*rabbitmq.Conn, error) {
@@ -17,11 +18,18 @@ func NewRabbitConnection(connstr string) (*rabbitmq.Conn, error) {
 	return conn, nil
 }
 
-type Publisher struct {
-	Publisher *rabbitmq.Publisher
+type Publisher interface {
+	Publish(data []byte) error
 }
 
-func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string) (*Publisher, error) {
+type RabbitPublisher struct {
+	publisher    *rabbitmq.Publisher
+	exchangeName string
+	routingKey   []string
+	logger       *zap.Logger
+}
+
+func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string, routingKey []string, logger *zap.Logger) (Publisher, error) {
 	publisher, err := rabbitmq.NewPublisher(
 		conn,
 		rabbitmq.WithPublisherOptionsLogging,
@@ -32,16 +40,36 @@ func NewRabbitPublisher(conn *rabbitmq.Conn, exchangeName string) (*Publisher, e
 		return nil, fmt.Errorf("error creating rabbitMQ publisher: %w", err)
 	}
 
-	return &Publisher{Publisher: publisher}, nil
+	return &RabbitPublisher{
+		publisher:    publisher,
+		exchangeName: exchangeName,
+		routingKey:   routingKey,
+		logger:       logger,
+	}, nil
 }
 
-func (p *Publisher) Close() error {
-	p.Publisher.Close()
+func (pb *RabbitPublisher) Publish(data []byte) error {
+	err := pb.publisher.Publish(
+		data,
+		pb.routingKey,
+		rabbitmq.WithPublishOptionsContentType("application/json"),
+		rabbitmq.WithPublishOptionsExchange(pb.exchangeName),
+	)
+	if err != nil {
+		return fmt.Errorf("error publishing message: %w", err)
+	}
+
+	return nil
+}
+
+func (pb *RabbitPublisher) Close() error {
+	pb.publisher.Close()
 	return nil
 }
 
 type Consumer struct {
-	Consumer *rabbitmq.Consumer
+	consumer *rabbitmq.Consumer
+	logger   *zap.Logger
 }
 
 func NewRabbitConsumer(
@@ -49,6 +77,7 @@ func NewRabbitConsumer(
 	queueName string,
 	routingKey string,
 	exchangeName string,
+	logger *zap.Logger,
 ) (*Consumer, error) {
 	consumer, err := rabbitmq.NewConsumer(
 		conn,
@@ -61,10 +90,25 @@ func NewRabbitConsumer(
 		return nil, fmt.Errorf("error creating rabbitMQ consumer: %w", err)
 	}
 
-	return &Consumer{Consumer: consumer}, nil
+	return &Consumer{
+		consumer: consumer,
+		logger:   logger,
+	}, nil
+}
+
+func (cs *Consumer) Consume() error {
+	err := cs.consumer.Run(
+		func(delivery rabbitmq.Delivery) rabbitmq.Action {
+			cs.logger.Sugar().Infof("recieved rabbit message: %s", string(delivery.Body))
+			return rabbitmq.Ack
+		})
+	if err != nil {
+		return fmt.Errorf("error consuming message: %w", err)
+	}
+	return nil
 }
 
 func (cs *Consumer) Close() error {
-	cs.Consumer.Close()
+	cs.consumer.Close()
 	return nil
 }

@@ -29,10 +29,10 @@ func NewDB(
 		dbname,
 	)
 	db, err := sqlx.Connect("pgx", dbConnStr)
-	log.Info("connected to postgreSQL database")
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
+	log.Info("connected to postgreSQL database")
 	return &DB{Conn: db, Log: log}, nil
 }
 
