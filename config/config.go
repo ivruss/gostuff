@@ -37,7 +37,9 @@ type GRPCConn struct {
 }
 
 type RabbitConsumer struct {
-	BindingKey string `yaml:"binding_key"`
+	BindingKey   string `yaml:"binding_key"`
+	QueueName    string `yaml:"queue_name"`
+	ExchangeName string `yaml:"exchange_name"`
 }
 
 type RabbitProducer struct {
