@@ -69,7 +69,7 @@ func (p *RabbitPublisher) Close() error {
 }
 
 type Consumer interface {
-	Consume() error
+	Consume(handler func([]byte) error) error
 	Close() error
 }
 
@@ -102,10 +102,16 @@ func NewRabbitConsumer(
 	}, nil
 }
 
-func (c *RabbitConsumer) Consume() error {
+func (c *RabbitConsumer) Consume(handler func([]byte) error) error {
 	err := c.consumer.Run(
 		func(delivery rabbitmq.Delivery) rabbitmq.Action {
 			c.logger.Sugar().Infof("recieved rabbit message: %s", string(delivery.Body))
+
+			if err := handler(delivery.Body); err != nil {
+				c.logger.Sugar().Errorf("error handling rabbit message: %s", err)
+				return rabbitmq.NackRequeue
+			}
+
 			return rabbitmq.Ack
 		})
 	if err != nil {
